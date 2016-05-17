@@ -31,9 +31,9 @@ exports.app = app;
 debug('starting up');
 
 function imListening() {
-   console.log('running');
    debug('Node app is running on port', app.get('port'));
+   debug(`http://localhost:${app.get('port')}`);
    debug('versions:', process.versions);
-   console.log('im listening');
+   debug('im listening');
 }
 

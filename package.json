@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon ./index.js"
+    "start": "DEBUG=* nodemon ./src/index.js"
   },
   "author": "",
   "license": "ISC",
@@ -14,12 +14,18 @@
     "debug": "2.2.0",
     "express": "4.13.4",
     "express-session": "1.13.0",
+    "graceful-fs": "4.1.4",
+    "grunt": "1.0.1",
     "passport": "0.3.2",
     "passport-auth0": "0.5.1",
     "passport-jwt": "2.0.0"
   },
   "devDependencies": {
-    "grunt-contrib-nodemon": "0.5.2",
+    "nodemon": "1.9.2",
     "should": "8.3.1"
+  },
+  "engine": {
+    "node": "6.2.0",
+    "npm": "4.4.4"
   }
 }
