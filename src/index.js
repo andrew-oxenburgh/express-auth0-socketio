@@ -30,7 +30,7 @@ debug('starting up');
 
 function imListening() {
    debug('Node app is running on port', app.get('port'));
-   debug(`http://localhost:${app.get('port')}/sign-on`);
+   debug(`http://localhost:${app.get('port')}/`);
    debug('versions:', process.versions);
    debug('im listening');
 }
