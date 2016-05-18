@@ -1,5 +1,9 @@
 'use strict';
 
+var debug = require('debug')('passport-tut:routes');
+
+var passport = require('passport');
+
 module.exports = function(app){
    app.get('/', function(req, resp){
       resp.send('hello, world');
@@ -13,7 +17,20 @@ module.exports = function(app){
       resp.send('private');
    });
 
-   app.get('/sign-on', function(req, resp){
-      resp.send('sign-on');
-   });
+   app.get('/callback',
+      passport.authenticate('auth0', { failureRedirect: '/sign-on' }),
+      function(req, res) {
+         if (!req.user) {
+            throw new Error('user null');
+         }
+         res.redirect("/");
+      }
+   );
+
+   app.get('/sign-on',
+      passport.authenticate('auth0', {}), function (req, res) {
+         debug('authenticating');
+         res.redirect("/");
+      });
+
 };
