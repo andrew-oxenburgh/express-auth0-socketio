@@ -1,0 +1,26 @@
+<html>
+<header>
+</header>
+<body>
+<h1> Welcome to passport-tut </h1>
+
+<a onclick="return msgMe();" href="javascript:void(0);">send message</a>
+
+<a href="/">public pages</a>
+<a href="/logout">log out</a>
+<script src="/js/socket.io-client/socket.io.js"></script>
+<script>
+    var socket = io.connect('http://localhost:5011');
+    socket.on('auth-req', function () {
+        console.log('received "auth-req"');
+        socket.emit('authResp', { token: 'my token' });
+    });
+    socket.on('refresh', function(){
+        console.log('refresh');
+    });
+    var msgMe = function(){
+        socket.emit('something');
+    }
+</script>
+</body>
+</html>

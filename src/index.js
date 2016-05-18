@@ -1,11 +1,18 @@
 'use strict';
 
+var debug = require('debug')('passport-tut:index');
+
 var express = require('express');
 var session = require('express-session');
-var debug = require('debug')('passport-tut:index');
 var passport = require('passport');
-
 var app = express();
+
+require('./socket-comms').init(app);
+
+app.set('views', __dirname + '/../views');
+app.set('view engine', 'ejs');
+
+app.use('/js', express.static(__dirname + '/../public/bower_components'));
 
 app.use(session({
    secret: process.env.AUTH0_CLIENT_SECRET,
@@ -17,12 +24,12 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 var authenticate = require('./authenticate');
+
 require('./routes')(app);
 
 var port = process.env.PORT || 5010;
 
 app.set('port', port);
-
 
 app.listen(app.get('port'), imListening);
 

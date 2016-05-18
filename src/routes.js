@@ -4,56 +4,64 @@ var debug = require('debug')('passport-tut:routes');
 
 var passport = require('passport');
 
-module.exports = function (app) {
-   app.get('/', function (req, resp) {
-      var authed = req.isAuthenticated();
-      debug('/', authed);
-      var choice = '';
-      if (authed) {
-         choice = '<a href="/private">go to my account page</a>'
-      } else {
-         choice = '<a href="/login">log in</a>';
-      }
-      resp.send(`<h1>welcome page</h1><h2> ${choice}</h2>`);
-   });
+var redirectIfUnauthed = function(req, resp, next) {
+   if (req.isAuthenticated()) {
+      next();
+   } else {
+      resp.redirect('/');
+   }
+};
+
+var privatePage = function(req, resp) {
+   var authed = req.isAuthenticated();
+   debug('/private', authed);
+   resp.render('private.ejs',
+      {
+         authed: authed
+      });
+};
+
+var publicPage = function(req, resp) {
+   var authed = req.isAuthenticated();
+   debug('/', authed);
+   resp.render('public.ejs',
+      {
+         authed: authed
+      });
+};
+
+var logout = function(req, res) {
+   req.logout();
+   debug('/logout', req.isAuthenticated());
+   res.redirect('/');
+};
+
+module.exports = function(app) {
+   app.get('/', publicPage);
 
    app.get('/private',
-      function(req, resp, next){
-        if(req.isAuthenticated()){
-           next();
-        }else{
-           resp.redirect('/');
-        }
-      },
-      function (req, resp) {
-         debug('/private', req.isAuthenticated());
-         resp.send('private <a href="/logout">logout</a>');
-      });
+      redirectIfUnauthed,
+      privatePage
+   );
 
    app.get('/login',
-      passport.authenticate('auth0', {}), function (req, res) {
-         debug('/login', req.isAuthenticated());
-         res.redirect("/");
+      passport.authenticate('auth0', {}), function(req, res) {
+         res.redirect('/');
       });
 
-   app.get('/logout',
-      function (req, res) {
-         req.logout();
-         debug('/logout', req.isAuthenticated());
-         res.redirect("/");
-      });
+   app.get('/logout', logout);
 
    app.get('/callback',
       passport.authenticate('auth0', {
          successRedirect: '/private',
          failureRedirect: '/login'
       }),
-      function (req, res) {
+      function(req, res) {
          debug('/callback', req.isAuthenticated());
          if (!req.user) {
             throw new Error('user null');
          }
-         res.redirect("/private");
+         res.redirect('/private');
       }
    );
 

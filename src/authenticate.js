@@ -1,7 +1,7 @@
 'use strict';
 
-var Auth0Strategy = require('passport-auth0'),
-   passport = require('passport');
+var Auth0Strategy = require('passport-auth0');
+var passport = require('passport');
 
 var strategy = new Auth0Strategy({
       domain:       process.env.AUTH0_DOMAIN,
@@ -24,6 +24,5 @@ passport.serializeUser(function(user, done) {
 passport.deserializeUser(function(user, done) {
    done(null, user);
 });
-
 
 passport.use(strategy);
