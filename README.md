@@ -34,7 +34,9 @@ _Manual step:_  save .env.template as .env and add relevant keys from the list a
 
 Open [http://localhost:5010](http://localhost:5010)
 
-![page flow](http://g.gravizo.com/g?
+# Diagrams
+
+![page flow]("http://g.gravizo.com/g?
   digraph G {
     homepage [shape=box, label="/"];
     server [shape=circle]
@@ -43,10 +45,10 @@ Open [http://localhost:5010](http://localhost:5010)
     private -> server [style="dotted", label="socket pings"]
     private -> homepage [label="log off"]
     homepage -> private [label="if logged on"]
-  }
-)
+  }"
+ "\nPage Flow")
  
-![seq](http://g.gravizo.com/g?
+![interaction between parties](http://g.gravizo.com/g?
 @startuml;
 autonumber;
 actor User;
