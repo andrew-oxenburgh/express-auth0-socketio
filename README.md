@@ -20,3 +20,31 @@ It has:
   }
 )
  
+![seq](http://g.gravizo.com/g?
+@startuml;
+autonumber;
+actor User;
+participant "Browser" as B;
+participant "Server" as S;
+participant "Auth0" as A;
+;
+User -> B: "Open page on site";
+User -> B: Logon;
+activate User;
+activate B;
+B <-> A: "request logon and token";
+B -> B: "persist token";
+B -> User: "go to private page";
+B -> S: "msg:connection";
+activate S;
+S -> B: "msg:auth-req";
+B -> S: "msg:auth-resp:token";
+User -> B:"Log off";
+B -> S: "Log off";
+S -> A: "Log off";
+B -> User: "Logged off";
+deactivate User;
+deactivate B;
+deactivate S;
+@enduml
+)
