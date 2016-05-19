@@ -32,7 +32,8 @@ _Manual step:_  save .env.template as .env and add relevant keys from the list a
  npm start
  ```
 
-Open http://localhost:5010
+Open [http://localhost:5010](http://localhost:5010)
+
 ![page flow](http://g.gravizo.com/g?
   digraph G {
     homepage [shape=box, label="/"];
