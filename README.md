@@ -36,7 +36,9 @@ Open [http://localhost:5010](http://localhost:5010)
 
 # Diagrams
 
-![page flow]("http://g.gravizo.com/g?
+### Page Flow
+
+![](http://g.gravizo.com/g?
   digraph G {
     homepage [shape=box, label="/"];
     server [shape=circle]
@@ -45,10 +47,11 @@ Open [http://localhost:5010](http://localhost:5010)
     private -> server [style="dotted", label="socket pings"]
     private -> homepage [label="log off"]
     homepage -> private [label="if logged on"]
-  }"
- "\nPage Flow")
+  })
  
-![interaction between parties](http://g.gravizo.com/g?
+### Interactions between parties
+
+![](http://g.gravizo.com/g?
 @startuml;
 autonumber;
 actor User;
