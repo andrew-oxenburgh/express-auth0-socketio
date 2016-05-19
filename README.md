@@ -7,10 +7,16 @@ It has:
  - express
  - auth0
  
- 
- ![page flow]
-(http://g.gravizo.com/g? digraph G 
-{ 
-  main -> parse -> execute; main -> init; main -> cleanup; execute -> make_string; execute -> printf init -> make_string; main -> printf; execute -> compare; 
-})
+
+![page flow](http://g.gravizo.com/g?
+  digraph G {
+    homepage [shape=box];
+    server [shape=circle]
+    private [shape=box]
+    homepage -> private [label="log on"]
+    private -> server [style="dotted", label="socket pings"]
+    private -> homepage [label="log off"]
+    homepage -> private [label="if logged on"]
+  }
+)
  
