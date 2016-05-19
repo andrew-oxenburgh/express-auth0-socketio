@@ -9,6 +9,8 @@ It has:
 
 # Instructions:
 
+You **will** need npm and nodejs. If you don't, load them with [npm getting started](https://www.npmjs.com/#getting-started)
+
 You will need an [auth0](https://auth0.com/) account, and you will need to make the credentials available to the app.
 
 From that you will need the following:
