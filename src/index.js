@@ -13,6 +13,7 @@ app.set('views', __dirname + '/../views');
 app.set('view engine', 'ejs');
 
 app.use('/js', express.static(__dirname + '/../public/bower_components'));
+app.use('/css', express.static(__dirname + '/../public/css'));
 
 app.use(session({
    secret: process.env.AUTH0_CLIENT_SECRET,

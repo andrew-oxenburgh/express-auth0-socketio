@@ -1,5 +1,6 @@
 <html>
 <header>
+    <link href="/css/css.css" rel="stylesheet" />
 </header>
 <body>
 <h1> Welcome to passport-tut </h1>
@@ -20,6 +21,7 @@
     });
     var msgMe = function(){
         socket.emit('something');
+        console.log('sent "something". check out server logs');
     }
 </script>
 </body>
