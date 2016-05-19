@@ -7,15 +7,5 @@ It has:
  - express
  - auth0
  
-<img src='http://g.gravizo.com/g?
- digraph G {
-   main -> parse -> execute;
-   main -> init;
-   main -> cleanup;
-   execute -> make_string;
-   execute -> printf
-   init -> make_string;
-   main -> printf;
-   execute -> compare;
- }
-'/> 
+<img src='http://g.gravizo.com/g? digraph G { main -> parse -> execute; main -> init; main -> cleanup; execute -> make_string; execute -> printf init -> make_string; main -> printf; execute -> compare; } '/>
+ 
