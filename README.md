@@ -10,7 +10,7 @@ It has:
 
 ![page flow](http://g.gravizo.com/g?
   digraph G {
-    homepage [shape=box];
+    homepage [shape=box, label="/"];
     server [shape=circle]
     private [shape=box]
     homepage -> private [label="log on"]
