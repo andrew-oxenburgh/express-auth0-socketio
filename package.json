@@ -6,7 +6,7 @@
   "scripts": {
     "postinstall": "bower install",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": ". ./env && DEBUG=* nodemon ./src/index.js"
+    "start": ". ./.env && DEBUG=* nodemon ./src/index.js"
   },
   "author": "",
   "license": "ISC",
