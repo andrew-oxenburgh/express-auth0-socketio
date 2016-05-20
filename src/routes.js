@@ -3,7 +3,7 @@
 var debug = require('debug')('cyrano:routes');
 var passport = require('passport');
 
-var redirectIfUnauthed = function(req, resp, next) {
+var redirectIfUnauthed = function (req, resp, next) {
    if (req.isAuthenticated()) {
       next();
    } else {
@@ -11,14 +11,14 @@ var redirectIfUnauthed = function(req, resp, next) {
    }
 };
 
-var privatePage = function(req, resp) {
+var privatePage = function (req, resp) {
    resp.render('private.ejs',
       {
          jwt_token: req.user.encrypted_jwt_token
       });
 };
 
-var publicPage = function(req, resp) {
+var publicPage = function (req, resp) {
    var authed = req.isAuthenticated();
    debug('/', authed);
    resp.render('public.ejs',
@@ -27,13 +27,13 @@ var publicPage = function(req, resp) {
       });
 };
 
-var logout = function(req, res) {
+var logout = function (req, res) {
    req.logout();
    debug('/logout', req.isAuthenticated());
    res.redirect('/');
 };
 
-module.exports = function(app) {
+module.exports = function (app) {
    app.get('/', publicPage);
 
    app.get('/private',
@@ -42,17 +42,19 @@ module.exports = function(app) {
    );
 
    app.get('/login',
-      passport.authenticate('auth0', {}), function(req, res) {
-         res.redirect('/');
-      });
+      passport.authenticate('auth0', {
+         successRedirect: '/',
+         failureRedirect: '/',
+         failureFlash: true
+      }));
 
    app.get('/logout', logout);
 
    app.get('/callback',
       passport.authenticate('auth0', {
-         failureRedirect: '/login'
+         failureRedirect: '/'
       }),
-      function(req, res) {
+      function (req, res) {
          debug('/callback', req.isAuthenticated());
          if (!req.user) {
             throw new Error('user null');
