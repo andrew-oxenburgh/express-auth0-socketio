@@ -1,7 +1,6 @@
 'use strict';
 
-var debug = require('debug')('passport-tut:routes');
-
+var debug = require('debug')('cyrano:routes');
 var passport = require('passport');
 
 var redirectIfUnauthed = function(req, resp, next) {
@@ -13,11 +12,9 @@ var redirectIfUnauthed = function(req, resp, next) {
 };
 
 var privatePage = function(req, resp) {
-   var authed = req.isAuthenticated();
-   debug('/private', authed);
    resp.render('private.ejs',
       {
-         authed: authed
+         jwt_token: req.user.encrypted_jwt_token
       });
 };
 
@@ -53,7 +50,6 @@ module.exports = function(app) {
 
    app.get('/callback',
       passport.authenticate('auth0', {
-         successRedirect: '/private',
          failureRedirect: '/login'
       }),
       function(req, res) {

@@ -1,6 +1,6 @@
 'use strict';
 
-var debug = require('debug')('passport-tut:index');
+var debug = require('debug')('cyrano:index');
 
 var express = require('express');
 var session = require('express-session');

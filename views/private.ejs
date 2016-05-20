@@ -1,6 +1,6 @@
 <html>
 <header>
-    <link href="/css/css.css" rel="stylesheet" />
+    <link href="/css/css.css" rel="stylesheet"/>
 </header>
 <body>
 <h1> Welcome to passport-tut </h1>
@@ -11,15 +11,19 @@
 <a href="/logout">log out</a>
 <script src="/js/socket.io-client/socket.io.js"></script>
 <script>
-    var socket = io.connect('http://localhost:5011');
+    var jwt_token = "<%= jwt_token %>";
+    var socket = io.connect('http://localhost:5011', {
+        query: 'token=' + jwt_token
+    })
+    ;
     socket.on('auth-req', function () {
         console.log('received "auth-req"');
-        socket.emit('authResp', { token: 'my token' });
+        socket.emit('authResp', {token: 'my token'});
     });
-    socket.on('refresh', function(){
+    socket.on('refresh', function () {
         console.log('refresh');
     });
-    var msgMe = function(){
+    var msgMe = function () {
         socket.emit('something');
         console.log('sent "something". check out server logs');
     }
