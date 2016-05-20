@@ -3,9 +3,9 @@
 This is a bare bones app that you can use to create a new express app.
 It has:
 
- 1. socket.io
  1. express
  1. auth0
+ 1. socket.io
 
 # Instructions:
 
@@ -16,9 +16,10 @@ You will need an [auth0](https://auth0.com/) account, and you will need to make 
 From that you will need the following:
 
  * AUTH0_CLIENT_ID
- 1. AUTH0_CLIENT_SECRET
- 1. AUTH0_DOMAIN
- 1. AUTH0_CALLBACK_URL
+ * AUTH0_CLIENT_SECRET
+ * AUTH0_DOMAIN
+ * AUTH0_CALLBACK_URL
+ * JWT_TOKEN_SECRET - this is for encrypting the token as it goes out. It will remain internal to the app.
 
 When you have these do the following
 
