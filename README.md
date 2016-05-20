@@ -82,3 +82,25 @@ deactivate B;
 deactivate S;
 @enduml
 )
+
+
+### Logging on with Auth0
+
+![](http://g.gravizo.com/g?
+@startuml;
+autonumber;
+participant "Browser" as B;
+participant "Auth0" as A;
+participant "Identity Provider" as P;
+participant "Server" as S;
+;
+B -> A: "Initiate Logon";
+A -> P: OAuth;
+A -> B: "redirect, with a token";
+B -> A: "validate token and get profile";
+B -> S: "send JWT in Auth header";
+S -> S: "validate token and extract profile"
+;
+;
+@enduml
+)
