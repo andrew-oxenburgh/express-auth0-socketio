@@ -12,19 +12,48 @@
 <script src="/js/socket.io-client/socket.io.js"></script>
 <script>
     var jwt_token = "<%= jwt_token %>";
-    var socket = io.connect('http://localhost:5011', {
-        query: 'token=' + jwt_token
-    })
-    ;
-    socket.on('auth-req', function () {
-        console.log('received "auth-req"');
-        socket.emit('authResp', {token: 'my token'});
+    var socket = io.connect('http://localhost:5011');
+    socket.on('connect', function () {
+        console.log('connect');
+        socket.on('authenticated', function () {
+            console.log('authenticated');
+            //do other things
+        }).emit('authenticate', {token: jwt_token}); //send the jwt
     });
-    socket.on('refresh', function () {
-        console.log('refresh');
+
+
+    socket.on('unauthenticated', function () {
+        console.log('unauthenticated');
+        //do other things
     });
+
+    socket.on('error', function () {
+        console.log('error');
+        //do other things
+    });
+
+    socket.on('unauthorized', function () {
+        console.log('unauthorized');
+        //do other things
+    });
+
+    socket.on('authorized', function () {
+        console.log('authorized');
+        //do other things
+    });
+
+    socket.on('something:else', function () {
+        console.log('something:else');
+        //do other things
+    });
+
+    socket.on('redirect', function (data) {
+        console.log('redirect');
+        document.location.href = data.url;
+    });
+
     var msgMe = function () {
-        socket.emit('something');
+        socket.emit('something', {token: jwt_token});
         console.log('sent "something". check out server logs');
     }
 </script>
