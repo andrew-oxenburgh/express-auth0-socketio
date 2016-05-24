@@ -19,7 +19,8 @@ var privatePage = function (req, resp) {
       .then(function () {
          resp.render('private.ejs',
             {
-               jwt_token: encrypted_token
+               jwt_token: encrypted_token,
+               auth_interval:process.env.JWT_AUTH_INTERVAL || 60 * 1000
             })
       })
       .catch(function(err){
