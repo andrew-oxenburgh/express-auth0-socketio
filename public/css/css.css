@@ -2,4 +2,27 @@
 
 body{
     font-family:helvetica, sans-serif;
+    font-size:xx-large;
+}
+
+.msg-sent, .msg-rcvd{
+    color:transparent;
+}
+
+.ping{
+    color:red;
+    transition: opacity 0.5s ease-in;
+    transition: opacity 0.5s ease-out;
+}
+
+.connected::before{
+    content: 'connected';
+}
+
+.disconnected::before{
+    content: 'DISconnected';
+}
+
+.startup::before{
+    content: 'startup';
 }

@@ -17,17 +17,17 @@ var strategy = new Auth0Strategy({
       callbackURL: process.env.AUTH0_CALLBACK_URL
    },
    function (accessToken, refreshToken, extraParams, profile, done) {
-      var token = jwt.sign(
+      var token = extraParams.id_token;
+      var encrypted_token = jwt.sign(
          {jwt_token:extraParams.id_token}
          , process.env.JWT_TOKEN_SECRET
          , {expiresIn:timeout()}
       );
-      profile.encrypted_jwt_token = token;
-      profile.jwt_token = extraParams.id_token;
+      
+      // persist token in user profile
+      profile.encrypted_jwt_token = encrypted_token;
+      profile.jwt_token = token;
       console.log('logged on at ' + new Date().toTimeString());
-      // accessToken is the token to call Auth0 API (not needed in the most cases)
-      // extraParams.id_token has the JSON Web Token
-      // profile has all the information from the user
       return done(null, profile);
    }
 );

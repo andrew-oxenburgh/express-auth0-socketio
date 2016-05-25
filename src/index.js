@@ -4,6 +4,7 @@ var debug = require('debug')('cyrano:index');
 
 var express = require('express');
 var session = require('express-session');
+var MongoStore = require('connect-mongo')(session);
 var passport = require('passport');
 var app = express();
 
@@ -15,10 +16,13 @@ app.set('view engine', 'ejs');
 app.use('/js', express.static(__dirname + '/../public/bower_components'));
 app.use('/css', express.static(__dirname + '/../public/css'));
 
+
+// persisted using ```connect-mongo```
 app.use(session({
    secret: process.env.AUTH0_CLIENT_SECRET,
    resave: false,
-   saveUninitialized: false
+   saveUninitialized: false,
+   store: new MongoStore({ url: 'mongodb://localhost/thingyhjgjhsagjhgjhsagjhsagjhsdag' })
 }));
 
 app.use(passport.initialize());

@@ -13,11 +13,11 @@ var redirectIfUnauthed = function (req, resp, next) {
    }
 };
 
-var privatePage = function (req, resp) {
+var privatePage = function (req, res) {
    var encrypted_token = req.user.encrypted_jwt_token;
    jwt.verifyAsync(encrypted_token, process.env.JWT_TOKEN_SECRET)
       .then(function () {
-         resp.render('private.ejs',
+         res.render('private.ejs',
             {
                jwt_token: encrypted_token,
                auth_interval:process.env.JWT_AUTH_INTERVAL || 60 * 1000
@@ -26,27 +26,28 @@ var privatePage = function (req, resp) {
       .catch(function(err){
          // timed out, or something
          req.logout();
-         resp.redirect('/?timeout=true');
+         res.locals.timeout = true;
+         res.redirect('/');
       });
 };
 
-var publicPage = function (req, resp) {
-   resp.render('public.ejs',
+var publicPage = function (req, res) {
+   res.render('public.ejs',
       {
          authed: req.isAuthenticated(),
-         timeout: req.query.timeout
+         timeout: res.locals.timeout || req.query.timeout || false
       });
 };
 
-var logout = function (req, res) {
+var logout = function (req, res, next) {
    req.logout();
-   debug('/logout', req.isAuthenticated());
-   res.redirect('/');
+   next();
 };
 
-var timeout = function (req, res) {
+var timeout = function (req, res, next) {
    req.logout();
-   res.redirect('/?timeout=true');
+   res.locals.timeout = true;
+   next();
 };
 
 module.exports = function (app) {
@@ -64,14 +65,14 @@ module.exports = function (app) {
          failureFlash: true
       }));
 
-   app.get('/logout', logout);
-   app.get('/timeout', timeout);
+   app.get('/logout', logout, publicPage);
+   app.get('/timeout', timeout, publicPage);
 
    app.get('/callback',
       passport.authenticate('auth0', {
          failureRedirect: '/'
       }),
-      function (req, res) {
+      function (req, res, next) {
          debug('/callback', req.isAuthenticated());
          if (!req.user) {
             throw new Error('user null');

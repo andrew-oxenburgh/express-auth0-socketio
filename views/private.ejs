@@ -3,21 +3,31 @@
     <link href="/css/css.css" rel="stylesheet"/>
 </header>
 <body>
-<h1> Welcome to passport-tut </h1>
+<h1> Welcome to express-auth0-socketio </h1>
 
-<a onclick="return msgMe();" href="javascript:void(0);">send message</a>
+<div class="status"></div>
 
 <a href="/">public pages</a>
 <a href="/logout">log out</a>
+<br>
+<a onclick="return msgMe();" href="javascript:void(0);">send message</a>
+
+<div class="msg-sent">message sent</div>
+<div class="msg-rcvd">response received</div>
+
 <script src="/js/socket.io-client/socket.io.js"></script>
+<script src="/js/jquery/dist/jquery.min.js"></script>
 <script>
+    // unencrypted token
     var jwt_token = "<%= jwt_token %>";
+    var connected = false;
     var authInterval = <%= auth_interval%>;
     var socket = io.connect('http://localhost:5011');
     socket.on('connect', function () {
         console.log('connect');
         socket.on('authenticated', function () {
             console.log('authenticated');
+            statusConnect();
             //do other things
         }).emit('authenticate', {token: jwt_token}); //send the jwt
     });
@@ -27,24 +37,36 @@
         console.log('unauthenticated');
         //do other things
     });
+    socket.on('disconnect', function () {
+        console.log('disconnect');
+        statusDisconnect();
+    });
 
-    socket.on('error', function () {
-        console.log('error');
-        //do other things
+    socket.on('reconnect', function () {
+        console.log('reconnect');
+        statusConnect();
     });
 
     socket.on('unauthorized', function () {
         console.log('unauthorized');
+        statusDisconnect();
         //do other things
     });
 
     socket.on('authorized', function () {
         console.log('authorized');
+        statusConnect();
         //do other things
     });
 
     socket.on('something:else', function () {
         console.log('something:else');
+        $('.msg-rcvd').addClass('ping');
+
+        setTimeout(function(){
+            $('.msg-sent').removeClass('ping');
+            $('.msg-rcvd').removeClass('ping');
+        }, 2000);
         //do other things
     });
 
@@ -56,12 +78,26 @@
     var msgMe = function () {
         socket.emit('something', {token: jwt_token});
         console.log('sent "something". check out server logs');
+        $('.msg-sent').addClass('ping');
     };
 
     setInterval(function(){
-        console.log('checking auth');
-        socket.emit('auth-check', {token: jwt_token});
-    }, 5000);
+        if(connected){
+            console.log('checking auth');
+            socket.emit('auth-check', {token: jwt_token});
+        }
+    }, authInterval);
+
+    var statusConnect = function () {
+        connected = true;
+        $('.status').addClass('connected').removeClass('disconnected');
+    };
+
+    var statusDisconnect = function () {
+        connected = false;
+        $('.status').addClass('disconnected').removeClass('connected');
+    };
+
 </script>
 </body>
 </html>

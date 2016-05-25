@@ -5,17 +5,37 @@
 <body>
 
 
-<h1> Welcome to passport-tut </h1>
-
+<h1> Welcome to express-auth0-socketio demo</h1>
 <% if(authed){ %>
 <a href="/private">go to my account page</a>
 <% } else { %>
-<a href="/login">log in</a>
+<a href="/login" class="login">login</a>
 <% } %>
+<p>
+Log in using your any of your credentials. (currently facebook, github,
+google, or linkedin)
+</p>
+<p>
+Just a simple message demo.
+</p>
+<p>
+Once you're logged in, you have a timed session.
+</p>
+<p>
+Within this session you can send messages.
+</p>
+<p>
+There is a periodic ping that will log you off when your token expires.
+</p>
 
 <% if(timeout){ %>
     <h3>session timed out </h3>
 <% } %>
+
+<br>
+
+<a href="https://github.com/andrew-oxenburgh/express-auth0-socketio"
+   target="_blank">info</a>
 
 </body>
 </html>

@@ -19,7 +19,11 @@ From that you will need the following:
  * AUTH0_CLIENT_SECRET
  * AUTH0_DOMAIN
  * AUTH0_CALLBACK_URL
- * JWT_TOKEN_SECRET - this is for encrypting the token as it goes out. It will remain internal to the app.
+ 
+ * JWT_TOKEN_SECRET - pretty_damn_well_anything_as_long_as_it_cant_be_guessed
+ * JWT_TOKEN_TIMEOUT=7days
+ * JWT_AUTH_INTERVAL=60*1000
+
 
 When you have these do the following
 
@@ -29,7 +33,7 @@ When you have these do the following
  npm install
 
  ```
-_Manual step:_  save .env.template as .env and add relevant keys from the list above.
+_Manual step:_  save ```.env.template``` as ```.env``` and add relevant keys from the list above.
  
  ```
  npm start
@@ -51,6 +55,28 @@ Open [http://localhost:5010](http://localhost:5010)
     private -> homepage [label="log off"]
     homepage -> private [label="if logged on"]
   })
+  
+### Logging on with Auth0
+
+![](http://g.gravizo.com/g?
+@startuml;
+autonumber;
+participant "Browser" as B;
+participant "Auth0" as A;
+participant "Identity Provider" as P;
+participant "Server" as S;
+;
+B -> A: "Initiate Logon";
+A -> P: OAuth;
+A -> B: "redirect, with a token";
+B -> A: "validate token and get profile";
+B -> S: "send JWT in Auth header";
+S -> S: "validate token and extract profile"
+;
+;
+@enduml
+)
+
  
 ### Interactions between parties
 
@@ -73,6 +99,8 @@ B -> S: "msg:connection";
 activate S;
 S -> B: "msg:auth-req";
 B -> S: "msg:auth-resp:token";
+B -> S: "some manual messages";
+B -> S: "periodic auth-check";
 User -> B:"Log off";
 B -> S: "Log off";
 S -> A: "Log off";
@@ -83,24 +111,31 @@ deactivate S;
 @enduml
 )
 
-
-### Logging on with Auth0
+### On jwt timeout
 
 ![](http://g.gravizo.com/g?
 @startuml;
 autonumber;
+actor User;
 participant "Browser" as B;
-participant "Auth0" as A;
-participant "Identity Provider" as P;
 participant "Server" as S;
 ;
-B -> A: "Initiate Logon";
-A -> P: OAuth;
-A -> B: "redirect, with a token";
-B -> A: "validate token and get profile";
-B -> S: "send JWT in Auth header";
-S -> S: "validate token and extract profile"
-;
-;
+activate User;
+activate B;
+activate S;
+User -> B: "Open and logged on";
+B -> S: "periodic auth-check";
+B -> S: "periodic auth-check";
+B -> S: "periodic auth-check";
+B -> S: "periodic auth-check";
+B -> S: "periodic auth-check";
+B -> B: "token invalid or timed out";
+B -> B: "log off";
+B -> User: "redirect to /";
+deactivate User;
+deactivate B;
+deactivate S;
 @enduml
 )
+
+
