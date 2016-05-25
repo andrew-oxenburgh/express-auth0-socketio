@@ -19,11 +19,11 @@ var jwtOptions = {
 // * @param socket - to listen on
 // * @evtName - name of the event
 // * @evtFn - function to be called - function([[socket], data])
-var verifiedOnEvent = function (socket, evtName, evtFn) {
-   socket.on(evtName, function (data) {
+var verifiedOnEvent = function(socket, evtName, evtFn) {
+   socket.on(evtName, function(data) {
       jwtVerify.verifyAsync(data.token, process.env.JWT_TOKEN_SECRET)
          .then(evtFn)
-         .catch(function (err) {
+         .catch(function(err) {
             debug('timed out...', err);
             socket.emit('redirect', {url: '/timeout'});
          });
@@ -31,16 +31,16 @@ var verifiedOnEvent = function (socket, evtName, evtFn) {
 };
 
 // #### sample function for above. You'll need to bind this
-var handleSomething = function (socket, data) {
+var handleSomething = function(socket, data) {
    debug('rcvd something from somewhere - ', data.jwt_token);
    socket.emit('something:else');
 };
 
-var noop = function () {
+var noop = function() {
 };
 
 module.exports = {
-   init: function (app) {
+   init: function(app) {
       var server = require('http').Server(app);
       server.listen(5011);
       var io = require('socket.io')(server);
@@ -48,7 +48,7 @@ module.exports = {
       // authenticate me, and wait for ```authenticated``` message. Then
       // register handlers
       io.sockets.on('connection', socketioJwt.authorize(jwtOptions))
-         .on('authenticated', function (socket) {
+         .on('authenticated', function(socket) {
             console.log('authenticated');
             // handle manual messages from web page
             verifiedOnEvent(socket, 'something', handleSomething.bind(null, socket));
@@ -56,7 +56,7 @@ module.exports = {
             verifiedOnEvent(socket, 'auth-check', noop);
             verifiedOnEvent(socket, 'ping', noop);
          })
-         .on('unauthenticated', function (socket) {
+         .on('unauthenticated', function(socket) {
             console.log('unauthenticated');
             socket.emit('redirect', {url: '/timeout'});
          });

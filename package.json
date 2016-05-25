@@ -10,7 +10,8 @@
   "private": false,
   "scripts": {
     "postinstall": "bower install",
-    "start": ". ./.env && DEBUG=* nodemon ./src/index.js"
+    "start": ". ./.env && DEBUG=* nodemon ./src/index.js",
+    "jscs": "jscs ./src/*.js"
   },
   "author": {
     "name": "Andrew Oxenburgh",
