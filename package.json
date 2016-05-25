@@ -11,7 +11,7 @@
   "scripts": {
     "postinstall": "bower install",
     "start": ". ./.env && DEBUG=* nodemon ./src/index.js",
-    "jscs": "jscs ./src/*.js"
+    "jscs": "jscs --fix ./src/*.js"
   },
   "author": {
     "name": "Andrew Oxenburgh",
