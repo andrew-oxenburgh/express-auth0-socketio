@@ -1,8 +1,5 @@
-
-
 body{
-    font-family:helvetica, sans-serif;
-    font-size:xx-large;
+    font-family:sans-serif;
 }
 
 .msg-sent, .msg-rcvd{
@@ -25,4 +22,10 @@ body{
 
 .startup::before{
     content: 'startup';
+}
+
+.status{
+    position:fixed;
+    top:0;
+    right:0;
 }

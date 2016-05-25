@@ -32,11 +32,11 @@
         }).emit('authenticate', {token: jwt_token}); //send the jwt
     });
 
-
     socket.on('unauthenticated', function () {
         console.log('unauthenticated');
         //do other things
     });
+
     socket.on('disconnect', function () {
         console.log('disconnect');
         statusDisconnect();
