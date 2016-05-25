@@ -1,6 +1,6 @@
 {
   "name": "express-auth0-socketio",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "this is a bare minimum express app that also uses auth0 and socketio",
   "keywords": [
     "express",
