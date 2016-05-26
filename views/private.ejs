@@ -15,13 +15,79 @@
 <div class="msg-sent">message sent</div>
 <div class="msg-rcvd">response received</div>
 
+
+<div>
+    <h4>jwt token</h4>
+<p>There are 3 timeouts here. The auth timeout, held by Auth0. The JWT
+    timeout, which ios configured in .env, as JWT_TOKEN_TIMEOUT, and an
+    authorization ping, which verifies the token, held in .env
+    JWT_AUTH_INTERVAL</p>
+    <p>JWT_TOKEN_TIMEOUT=<span class="jwt-token-timeout"></span></p>
+    <p>JWT_AUTH_INTERVAL=<span class="jwt-auth-interval"></span></p>
+</div>
+
 <script src="/js/socket.io-client/socket.io.js"></script>
 <script src="/js/jquery/dist/jquery.min.js"></script>
 <script>
-    // unencrypted token
+    var s = 1000;
+    var m = s * 60;
+    var h = m * 60;
+    var d = h * 24;
+    var y = d * 365.25;
+
+    function parse(str) {
+        str = '' + str;
+        if (str.length > 10000) return;
+        var match = /^((?:\d+)?\.?\d+) *(milliseconds?|msecs?|ms|seconds?|secs?|s|minutes?|mins?|m|hours?|hrs?|h|days?|d|years?|yrs?|y)?$/i.exec(str);
+        if (!match) return;
+        var n = parseFloat(match[1]);
+        var type = (match[2] || 'ms').toLowerCase();
+        switch (type) {
+            case 'years':
+            case 'year':
+            case 'yrs':
+            case 'yr':
+            case 'y':
+                return n * y;
+            case 'days':
+            case 'day':
+            case 'd':
+                return n * d;
+            case 'hours':
+            case 'hour':
+            case 'hrs':
+            case 'hr':
+            case 'h':
+                return n * h;
+            case 'minutes':
+            case 'minute':
+            case 'mins':
+            case 'min':
+            case 'm':
+                return n * m;
+            case 'seconds':
+            case 'second':
+            case 'secs':
+            case 'sec':
+            case 's':
+                return n * s;
+            case 'milliseconds':
+            case 'millisecond':
+            case 'msecs':
+            case 'msec':
+            case 'ms':
+                return n;
+        }
+    }
+
+
     var jwt_token = "<%= jwt_token %>";
     var connected = false;
-    var authInterval = <%= auth_interval%>;
+    var authIntervalAsString = "<%= auth_interval %>";
+    var authInterval = parse(authIntervalAsString);
+    var jwtTimeout = "<%= jwt_timeout %>";
+
+    // unencrypted token
     var socket = io.connect('http://localhost:5011');
     socket.on('connect', function () {
         console.log('connect');
@@ -63,7 +129,7 @@
         console.log('something:else');
         $('.msg-rcvd').addClass('ping');
 
-        setTimeout(function(){
+        setTimeout(function () {
             $('.msg-sent').removeClass('ping');
             $('.msg-rcvd').removeClass('ping');
         }, 2000);
@@ -81,8 +147,8 @@
         $('.msg-sent').addClass('ping');
     };
 
-    setInterval(function(){
-        if(connected){
+    setInterval(function () {
+        if (connected) {
             console.log('checking auth');
             socket.emit('auth-check', {token: jwt_token});
         }
@@ -98,6 +164,8 @@
         $('.status').addClass('disconnected').removeClass('connected');
     };
 
+    $('.jwt-token-timeout').html(jwtTimeout);
+    $('.jwt-auth-interval').html(authIntervalAsString + "");
 </script>
 </body>
 </html>
