@@ -1,5 +1,5 @@
 {
-  "name": "@andrew.oxenburgh/passport-tut",
+  "name": "express-auth0-socketio",
   "description": "",
   "main": "index.js",
   "authors": [
@@ -9,7 +9,7 @@
   "moduleType": [
     "node"
   ],
-  "homepage": "",
+  "homepage": "https://github.com/andrew-oxenburgh/express-auth0-socketio.git",
   "private": true,
   "ignore": [
     "**/.*",
