@@ -5,78 +5,93 @@
 <body>
 <h1> Welcome to express-auth0-socketio </h1>
 
-<div class="status"></div>
+<div class="content">
+    <div class="status"></div>
 
-<a href="/">public pages</a>
-<a href="/logout">log out</a>
-<br>
-<a onclick="return msgMe();" href="javascript:void(0);">send message</a>
+    <a href="/">public pages</a>
+    <a href="/logout">log out</a>
+    <br>
+    <a onclick="return msgMe();" href="javascript:void(0);">send something</a>
 
-<div class="msg-sent">message sent</div>
-<div class="msg-rcvd">response received</div>
+    <div class="msg-sent">message sent</div>
+    <div class="msg-rcvd">response received</div>
 
 
-<div>
-    <h4>jwt token</h4>
-<p>There are 3 timeouts here. The auth timeout, held by Auth0. The JWT
-    timeout, which ios configured in .env, as JWT_TOKEN_TIMEOUT, and an
-    authorization ping, which verifies the token, held in .env
-    JWT_AUTH_INTERVAL</p>
-    <p>JWT_TOKEN_TIMEOUT=<span class="jwt-token-timeout"></span></p>
-    <p>JWT_AUTH_INTERVAL=<span class="jwt-auth-interval"></span></p>
+    <a onclick="return broadcast();" href="javascript:void(0);">send
+        broadcast</a>
+
+    <div class="broadcast-messages"></div>
+
+    <div>
+        <h4>jwt token</h4>
+        <p>There are 3 timeouts here. The auth timeout, held by Auth0. The JWT
+            timeout, which ios configured in .env, as JWT_TOKEN_TIMEOUT, and an
+            authorization ping, which verifies the token, held in .env
+            JWT_AUTH_INTERVAL</p>
+        <p>JWT_TOKEN_TIMEOUT=<span class="jwt-token-timeout"></span></p>
+        <p>JWT_AUTH_INTERVAL=<span class="jwt-auth-interval"></span></p>
+        <p>JWT_AUTH_INTERVAL=<span class="jwt-auth-interval-ms"></span>ms</p>
+    </div>
+
 </div>
-
+<div id="log-wrapper">
+    <div id="log"></div>
+</div>
 <script src="/js/socket.io-client/socket.io.js"></script>
 <script src="/js/jquery/dist/jquery.min.js"></script>
+<script src="/js/jquery-ui/jquery-ui.min.js"></script>
+<script src="/js/sprintf/dist/sprintf.min.js"></script>
+<script src="/js/lodash/lodash.js"></script>
 <script src="/my-js/ms.js"></script>
+<script src="/my-js/loggingThing.js"></script>
 <script>
 
     var jwt_token = "<%= jwt_token %>";
     var connected = false;
     var authIntervalAsString = "<%= auth_interval %>";
-    var authInterval = parse(authIntervalAsString);
+    var authInterval = parse(authIntervalAsString, {default: '5min'});
     var jwtTimeout = "<%= jwt_timeout %>";
 
     // unencrypted token
     var socket = io.connect('http://localhost:5011');
     socket.on('connect', function () {
-        console.log('connect');
+        userMessage('connect');
         socket.on('authenticated', function () {
-            console.log('authenticated');
+            userMessage('<< authenticated');
             statusConnect();
             //do other things
         }).emit('authenticate', {token: jwt_token}); //send the jwt
     });
 
     socket.on('unauthenticated', function () {
-        console.log('unauthenticated');
+        userMessage('<< unauthenticated');
         //do other things
     });
 
     socket.on('disconnect', function () {
-        console.log('disconnect');
+        userMessage('<< disconnect');
         statusDisconnect();
     });
 
     socket.on('reconnect', function () {
-        console.log('reconnect');
+        userMessage('<< reconnect');
         statusConnect();
     });
 
     socket.on('unauthorized', function () {
-        console.log('unauthorized');
+        userMessage('<< unauthorized');
         statusDisconnect();
         //do other things
     });
 
     socket.on('authorized', function () {
-        console.log('authorized');
+        userMessage('<< authorized');
         statusConnect();
         //do other things
     });
 
     socket.on('something:else', function () {
-        console.log('something:else');
+        userMessage('<< "something:else" message');
         $('.msg-rcvd').addClass('ping');
 
         setTimeout(function () {
@@ -87,19 +102,13 @@
     });
 
     socket.on('redirect', function (data) {
-        console.log('redirect');
+        userMessage('<< redirect ' + data.url);
         document.location.href = data.url;
     });
 
-    var msgMe = function () {
-        socket.emit('something', {token: jwt_token});
-        console.log('sent "something". check out server logs');
-        $('.msg-sent').addClass('ping');
-    };
-
     setInterval(function () {
         if (connected) {
-            console.log('checking auth');
+            userMessage('>> sending auth-check');
             socket.emit('auth-check', {token: jwt_token});
         }
     }, authInterval);
@@ -107,15 +116,41 @@
     var statusConnect = function () {
         connected = true;
         $('.status').addClass('connected').removeClass('disconnected');
+        userMessage('* connected');
     };
 
     var statusDisconnect = function () {
         connected = false;
         $('.status').addClass('disconnected').removeClass('connected');
+        userMessage('* disconnected');
     };
 
     $('.jwt-token-timeout').html(jwtTimeout);
     $('.jwt-auth-interval').html(authIntervalAsString + "");
+    $('.jwt-auth-interval-ms').html(authInterval + "");
+
+    var msgMe = function () {
+        socket.emit('something', {token: jwt_token});
+        userMessage('>> "something"');
+        $('.msg-sent').addClass('ping');
+    };
+
+    var broadcast = function () {
+        socket.emit('broadcast-cyrano:server', {
+            message: 'some message',
+            token: jwt_token
+        });
+        userMessage('>> "broadcast-cyrano:server". check out server logs');
+        $('.broadcast').addClass('ping');
+    };
+
+    socket.on('broadcast-cyrano:clients', function (data) {
+        userMessage('<< broadcast-cyrano:clients - ' + JSON.stringify(data));
+        $('.broadcast').html(data.message);
+    });
+
+
+
 </script>
 </body>
 </html>

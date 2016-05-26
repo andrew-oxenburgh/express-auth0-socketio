@@ -1,0 +1,76 @@
+body {
+  font-family: sans-serif;
+}
+
+.msg-sent, .msg-rcvd {
+  color: transparent;
+}
+
+.ping {
+  color: red;
+  transition: opacity 0.5s ease-in;
+  transition: opacity 0.5s ease-out;
+}
+
+.connected::before {
+  content: 'connected';
+}
+
+.disconnected::before {
+  content: 'DISconnected';
+}
+
+.startup::before {
+  content: 'startup';
+}
+
+.status {
+  position: fixed;
+  top: 0;
+  right: 35em;
+}
+
+.broadcast {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  background: antiquewhite;
+}
+
+.content{
+  width: calc(100% - 30em);
+}
+
+#log-wrapper{
+  position: fixed;
+  bottom: 1em;
+  right: 1em;
+  width: 30em;
+  height: 100%;
+  z-index: 500;
+}
+
+#log {
+  font-size: small;
+  width:100%;
+  height:100%;
+  background:transparent;
+  & div {
+    background: lightyellow;
+    color: black;
+    margin:0.1em;
+    border-radius: 0.1em;
+    display: block;
+    border: 0;
+    z-index: 500;
+    & p {
+      margin: 0;
+      border: 0;
+      padding: 0;
+      display: block;
+      z-index: 500;
+    }
+  }
+}
+
+

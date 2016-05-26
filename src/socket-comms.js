@@ -22,10 +22,16 @@ var jwtOptions = {
 var verifiedOnEvent = function(socket, evtName, evtFn) {
    socket.on(evtName, function(data) {
       jwtVerify.verifyAsync(data.token, process.env.JWT_TOKEN_SECRET)
+         .then(function() {
+            return data;
+         })
          .then(evtFn)
          .catch(function(err) {
             debug('timed out...', err);
             socket.emit('redirect', {url: '/timeout'});
+         })
+         .done(function() {
+            debug('done');
          });
    });
 };
@@ -45,6 +51,10 @@ module.exports = {
       server.listen(5011);
       var io = require('socket.io')(server);
 
+      var broadcastFn = function(socket, data) {
+         io.sockets.emit('broadcast-cyrano:clients', {message: data.message});
+      };
+
       // authenticate me, and wait for ```authenticated``` message. Then
       // register handlers
       io.sockets.on('connection', socketioJwt.authorize(jwtOptions))
@@ -55,6 +65,7 @@ module.exports = {
             // handle auth checks from web page
             verifiedOnEvent(socket, 'auth-check', noop);
             verifiedOnEvent(socket, 'ping', noop);
+            verifiedOnEvent(socket, 'broadcast-cyrano:server', broadcastFn.bind(null, socket));
          })
          .on('unauthenticated', function(socket) {
             console.log('unauthenticated');
