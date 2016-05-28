@@ -26,7 +26,7 @@ function userMessage(msg, options) {
    if ($logBucket.length < 1) {
       var logBucketDiv = sprintf('<div class="%s"></div>', currentLogBucket);
       $logBucket = $(logBucketDiv);
-      $logBucket.appendTo($log);
+      $logBucket.prependTo($log);
       $logBucket.show();
    }
    if (options.toConsole) {
@@ -34,7 +34,7 @@ function userMessage(msg, options) {
    }
    var message = sprintf('<p>%s</p>', msg);
 
-   $logBucket.append($(message));
+   $logBucket.prepend($(message));
 
    $log.show();
 

@@ -21,7 +21,11 @@ var privatePage = function(req, res) {
             {
                jwt_token: encrypted_token,
                auth_interval: process.env.JWT_AUTH_INTERVAL || '2hours',
-               jwt_timeout: process.env.JWT_TOKEN_TIMEOUT || '7days'
+               jwt_timeout: process.env.JWT_TOKEN_TIMEOUT || '7days',
+               user_picture: req.user.picture,
+               user_displayName: req.user.displayName,
+               user_nickname: req.user.nickname,
+               user_provider: req.user.provider
             });
       })
       .catch(function(err) {

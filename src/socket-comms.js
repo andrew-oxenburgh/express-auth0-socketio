@@ -8,6 +8,8 @@ var bluebird = require('bluebird');
 var socketioJwt = require('socketio-jwt');
 var jwtVerify = bluebird.promisifyAll(require('jsonwebtoken'));
 
+var crypto = require('crypto');
+
 var jwtOptions = {
    secret: process.env.JWT_TOKEN_SECRET,
    timeout: 15000    // this is the time within which to expect a response
@@ -51,21 +53,29 @@ module.exports = {
       server.listen(5011);
       var io = require('socket.io')(server);
 
-      var broadcastFn = function(socket, data) {
-         io.sockets.emit('broadcast-cyrano:clients', {message: data.message});
+      var broadcastFn = function(socket, room, data) {
+         io.sockets.to(room).emit('broadcast-cyrano:clients', {message: data.message});
       };
 
       // authenticate me, and wait for ```authenticated``` message. Then
       // register handlers
       io.sockets.on('connection', socketioJwt.authorize(jwtOptions))
          .on('authenticated', function(socket) {
-            console.log('authenticated');
+            var userId = jwtVerify.decode(socket.decoded_token.jwt_token, process.env.JWT_TOKEN_SECRET).sub;
+            var cipher = crypto.createCipher('aes256', process.env.USER_ID_SECRET);
+            var userHash = cipher.update(userId, 'utf8', 'base64');
+            userHash += cipher.final('base64');
+
+            var roomName = '/' + userHash;
+            var room = socket.join(roomName);
+            socket.emit('room', {roomName: roomName});
+
             // handle manual messages from web page
             verifiedOnEvent(socket, 'something', handleSomething.bind(null, socket));
             // handle auth checks from web page
             verifiedOnEvent(socket, 'auth-check', noop);
-            verifiedOnEvent(socket, 'ping', noop);
-            verifiedOnEvent(socket, 'broadcast-cyrano:server', broadcastFn.bind(null, socket));
+            verifiedOnEvent(socket, 'broadcast-cyrano:server', broadcastFn.bind(null, socket, roomName));
+            debug('finished authentication');
          })
          .on('unauthenticated', function(socket) {
             console.log('unauthenticated');

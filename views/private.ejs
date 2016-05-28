@@ -4,6 +4,11 @@
 </header>
 <body>
 <h1> Welcome to express-auth0-socketio </h1>
+<h2 class="room-name"></h2>
+<img src="#" alt="" class="user-picture"/>
+<div class="user-displayName"></div>
+<div class="user-nickname"></div>
+<div class="user-provider"></div>
 
 <div class="content">
     <div class="status"></div>
@@ -15,7 +20,6 @@
 
     <div class="msg-sent">message sent</div>
     <div class="msg-rcvd">response received</div>
-
 
     <a onclick="return broadcast();" href="javascript:void(0);">send
         broadcast</a>
@@ -30,7 +34,6 @@
             JWT_AUTH_INTERVAL</p>
         <p>JWT_TOKEN_TIMEOUT=<span class="jwt-token-timeout"></span></p>
         <p>JWT_AUTH_INTERVAL=<span class="jwt-auth-interval"></span></p>
-        <p>JWT_AUTH_INTERVAL=<span class="jwt-auth-interval-ms"></span>ms</p>
     </div>
 
 </div>
@@ -44,6 +47,8 @@
 <script src="/js/lodash/lodash.js"></script>
 <script src="/my-js/ms.js"></script>
 <script src="/my-js/loggingThing.js"></script>
+<script src="/my-js/domManipulation.js"></script>
+<script src="/my-js/connectWithSocket.js"></script>
 <script>
 
     var jwt_token = "<%= jwt_token %>";
@@ -51,84 +56,14 @@
     var authIntervalAsString = "<%= auth_interval %>";
     var authInterval = parse(authIntervalAsString, {default: '5min'});
     var jwtTimeout = "<%= jwt_timeout %>";
+    var user_picture = "<%= user_picture%>";
+    var user_displayName = "<%= user_displayName%>";
+    var user_nickname = "<%= user_nickname%>";
+    var user_provider = "<%= user_provider%>";
+    var userRoom ;
+    var socket;
 
-    // unencrypted token
-    var socket = io.connect('http://localhost:5011');
-    socket.on('connect', function () {
-        userMessage('connect');
-        socket.on('authenticated', function () {
-            userMessage('<< authenticated');
-            statusConnect();
-            //do other things
-        }).emit('authenticate', {token: jwt_token}); //send the jwt
-    });
-
-    socket.on('unauthenticated', function () {
-        userMessage('<< unauthenticated');
-        //do other things
-    });
-
-    socket.on('disconnect', function () {
-        userMessage('<< disconnect');
-        statusDisconnect();
-    });
-
-    socket.on('reconnect', function () {
-        userMessage('<< reconnect');
-        statusConnect();
-    });
-
-    socket.on('unauthorized', function () {
-        userMessage('<< unauthorized');
-        statusDisconnect();
-        //do other things
-    });
-
-    socket.on('authorized', function () {
-        userMessage('<< authorized');
-        statusConnect();
-        //do other things
-    });
-
-    socket.on('something:else', function () {
-        userMessage('<< "something:else" message');
-        $('.msg-rcvd').addClass('ping');
-
-        setTimeout(function () {
-            $('.msg-sent').removeClass('ping');
-            $('.msg-rcvd').removeClass('ping');
-        }, 2000);
-        //do other things
-    });
-
-    socket.on('redirect', function (data) {
-        userMessage('<< redirect ' + data.url);
-        document.location.href = data.url;
-    });
-
-    setInterval(function () {
-        if (connected) {
-            userMessage('>> sending auth-check');
-            socket.emit('auth-check', {token: jwt_token});
-        }
-    }, authInterval);
-
-    var statusConnect = function () {
-        connected = true;
-        $('.status').addClass('connected').removeClass('disconnected');
-        userMessage('* connected');
-    };
-
-    var statusDisconnect = function () {
-        connected = false;
-        $('.status').addClass('disconnected').removeClass('connected');
-        userMessage('* disconnected');
-    };
-
-    $('.jwt-token-timeout').html(jwtTimeout);
-    $('.jwt-auth-interval').html(authIntervalAsString + "");
-    $('.jwt-auth-interval-ms').html(authInterval + "");
-
+    connectWithSocket();
     var msgMe = function () {
         socket.emit('something', {token: jwt_token});
         userMessage('>> "something"');
@@ -144,12 +79,9 @@
         $('.broadcast').addClass('ping');
     };
 
-    socket.on('broadcast-cyrano:clients', function (data) {
-        userMessage('<< broadcast-cyrano:clients - ' + JSON.stringify(data));
-        $('.broadcast').html(data.message);
-    });
 
 
+    domManipulation();
 
 </script>
 </body>

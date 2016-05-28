@@ -1,15 +1,19 @@
-node_modules
+# this contains local config data
 .env
+env.sh
+
+# all sorts of generated junk
+node_modules
 .idea
 public/bower_components
 public/css
+/public/build
 *.iml
-env.sh
 .DS_Store
 npm-debug.log
 /logs/
 /out/
 /docs/
-/public/build
 /gruntfile.js
 /gruntfile.js.map
+

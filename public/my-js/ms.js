@@ -8,7 +8,7 @@ var y = d * 365.25;
 
 function parse(str, options) {
    options = options || {
-         default:NaN
+         default: NaN
       };
    str = '' + str;
    if (str.length > 10000) {
